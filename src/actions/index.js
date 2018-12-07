@@ -3,14 +3,23 @@ import { db } from '../firebase';
 
 
 export function getAllMessages() {
-    return async function (dispatch){
-        db.ref('/messages').on('value', (snapshot) => {
+    return function (dispatch){
+        const dbRef = db.ref('/messages');
 
-            dispatch({
-                type: types.GET_CHAT_MESSAGES,
-                messages: snapshot.val()
-            });
-        });
+            dbRef.on('value', (snapshot) => {
+                dispatch({
+                    type: types.GET_CHAT_MESSAGES,
+                    messages: snapshot.val()
+                    });
+                });
+            return dbRef;
     }
 }
+
+export const sendMessage = (msg) => async dispatch => {
+    return db.ref('/messages').push({
+        message: msg,
+        name: localStorage.getItem('chat_name')
+    });
+} 
 
